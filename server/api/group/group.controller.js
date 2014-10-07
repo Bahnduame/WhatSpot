@@ -2,6 +2,43 @@
 
 var _ = require('lodash');
 var Group = require('./group.model');
+var yelp = require("yelp").createClient({
+        consumer_key: "tWXZ06XhpgOgzdFCXjwuXQ", 
+        consumer_secret: "WQUWDghej2WlzvZD-_PgOUAjSLI",
+        token: "TB0HMwCq94InphtgQKfabp2MVspS_ysX",
+        token_secret: "tv3BlSjz88DejQ2l9obovuy4MIM"
+      });
+
+
+exports.getYelpResults = function(req, res){
+  var search = req.body.search;
+  var location = req.body.location;
+  
+  var restObj = {};
+  var rest = [];
+  var resultsArr = [];
+  var bizArr = [];
+
+  yelp.search({term: search, location: location}, function(error, data) {
+
+    bizArr = data.businesses;
+    console.log(bizArr);
+
+    for (var i=0; i<bizArr.length; i++){
+      var yelpObj = {};
+      yelpObj.id = bizArr[i].id;
+      yelpObj.name = bizArr[i].name;
+      yelpObj.rating = bizArr[i].rating;
+      yelpObj.url = bizArr[i].url;
+      yelpObj.mobile_url = bizArr[i].mobile_url;
+      resultsArr.push(yelpObj);
+    }
+
+    return res.json(resultsArr);
+  });
+}
+
+
 
 // Get list of groups
 exports.index = function(req, res) {
